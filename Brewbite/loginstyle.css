@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  /* background: linear-gradient(to right, #ffe6eb, #fff0f5); */
+   background: #fff8f2;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Heading */
+h3 {
+  font-family: 'Pacifico', cursive;
+  color: rgb(153, 88, 41);
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Login Container */
+.login-container {
+  background-color: #fffafc;
+  border-radius: 20px;
+  padding: 35px 30px;
+  box-shadow: 0 8px 16px rgb(154, 108, 75);
+  width: 340px;
+  text-align: center;
+  border: 2px solid rgb(213, 171, 141);
+}
+
+/* Input Fields */
+#loginForm input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1.5px solid rgb(213, 171, 141);
+  background-color: #fff0f5;
+  font-size: 14px;
+  outline: none;
+}
+
+#loginForm input::placeholder {
+  color: #a67885;
+}
+
+/* Login Button */
+#loginBtn {
+  background-color: rgb(88, 46, 17);
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+#loginBtn:hover {
+  background-color: rgb(204, 156, 122);
+}
+
+/* Login message */
+#login-message {
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgb(64, 30, 5);
+  text-align: center;
+}
+
+#login-message a {
+  color: rgb(71, 33, 6);
+  text-decoration: none;
+  font-weight: bold;
+}
