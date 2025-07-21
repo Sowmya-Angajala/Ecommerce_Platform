@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrewBite – Your Cart</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #fef9f5;
+    }
+    h1 {
+      font-family: 'Pacifico', cursive;
+      color: #4b2e2e;
+    }
+    .cart-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #5d4037;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3e2723;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Your BrewBite Cart 🛒</h1>
+  <div id="cartItems"></div>
+  <p><strong>Total:</strong> ₹<span id="totalAmount">0</span></p>
+  <button onclick="checkout('Completed')">Proceed to Checkout</button>
+  <button onclick="checkout('Pending')">Pay on Delivery</button>
+  <button onclick="window.location.href='customerdashboard.html'">Continue Shopping  🛍️</button>
+  <button onclick="window.location.href='orders.html'">Your Orders</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      push,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+      authDomain: "authenticate-56ae0.firebaseapp.com",
+      databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "authenticate-56ae0",
+      storageBucket: "authenticate-56ae0.appspot.com",
+      messagingSenderId: "644131826602",
+      appId: "1:644131826602:web:76b7bee06f711c666e59d3",
+      measurementId: "G-E76HLJH4H5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    let cart = [];
+    const cartItemsDiv = document.getElementById("cartItems");
+
+    function renderCart() {
+      cartItemsDiv.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "cart-item";
+        itemDiv.innerHTML = `
+          <strong>${item.name}</strong> - ₹${item.price} × 
+          <input type="number" min="1" value="${item.quantity}" onchange="updateQty(${index}, this.value)" style="width:40px"/>
+          <button onclick="removeItem(${index})">Remove</button>
+        `;
+        total += item.price * item.quantity;
+        cartItemsDiv.appendChild(itemDiv);
+      });
+
+      document.getElementById("totalAmount").innerText = total;
+    }
+    function saveCartToFirebase(userId) {
+      const cartRef = ref(database, `carts/${userId}`);
+      set(cartRef, cart);
+    }
+
+    function loadCartFromFirebase(userId) {
+      const cartRef = ref(database, `carts/${userId}`);
+      onValue(cartRef, (snapshot) => {
+        const data = snapshot.val();
+        cart = data ? data : [];
+        renderCart();
+      });
+    }
+
+    window.updateQty = (index, qty) => {
+      cart[index].quantity = parseInt(qty);
+      const user = auth.currentUser;
+      if (user) saveCartToFirebase(user.uid);
+      renderCart();
+    };
+
+    window.removeItem = (index) => {
+      cart.splice(index, 1);
+      const user = auth.currentUser;
+      if (user) saveCartToFirebase(user.uid);
+      renderCart();
+    };
+
+    window.checkout = (paymentStatus) => {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        alert("User not logged in!");
+        return;
+      }
+
+      const orderRef = ref(database, `orders/${user.uid}`);
+      const newOrderRef = push(orderRef);
+
+      const orderDetails = {
+        email: user.email,
+        timestamp: new Date().toISOString(),
+        items: cart,
+        totalAmount: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        paymentStatus: paymentStatus
+      };
+
+      set(newOrderRef, orderDetails)
+        .then(() => {
+          alert(`Order placed successfully!\nPayment Status: ${paymentStatus}`);
+          cart = [];
+          saveCartToFirebase(user.uid);
+          renderCart();
+        })
+        .catch((error) => {
+          console.error("Error saving order:", error);
+          alert("Failed to save order.");
+        });
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadCartFromFirebase(user.uid);
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+</body>
+</html>
