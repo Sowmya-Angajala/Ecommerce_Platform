@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendor Analytics – BrewBite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-[#fff8f2] text-[#3e2f1c]">
+    <!-- Header -->
+    <header class="bg-[#6f4e37] text-white px-6 py-4 shadow-md">
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center">
+                <i class="fas fa-coffee mr-2"></i> BrewBite – Vendor Analytics
+            </h1>
+            <div>
+                <button onclick="window.location.href='vendor.html'"
+                    class="bg-white text-[#6f4e37] px-4 py-1 rounded hover:bg-[#f3e5d8] mr-2 transition-all">
+                    <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                </button>
+                <button onclick="logout()"
+                    class="bg-white text-[#6f4e37] px-4 py-1 rounded hover:bg-[#f3e5d8] transition-all">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 md:p-6 max-w-7xl mx-auto">
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 shadow border-l-4 border-[#6f4e37]">
+                <h3 class="text-sm font-medium text-gray-500">Total Sales</h3>
+                <p class="text-2xl font-bold" id="totalSales">$0</p>
+                <p class="text-sm text-green-600 flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i> <span id="salesChange">0%</span> from last month
+                </p>
+            </div>
+            <div class="bg-white rounded-lg p-4 shadow border-l-4 border-[#a9745d]">
+                <h3 class="text-sm font-medium text-gray-500">Total Orders</h3>
+                <p class="text-2xl font-bold" id="totalOrders">0</p>
+                <p class="text-sm text-green-600 flex items-center">
+                    <i class="fas fa-arrow-up mr-1"></i> <span id="ordersChange">0%</span> from last month
+                </p>
+            </div>
+            <div class="bg-white rounded-lg p-4 shadow border-l-4 border-[#d3b8ae]">
+                <h3 class="text-sm font-medium text-gray-500">Top Product</h3>
+                <p class="text-2xl font-bold truncate" id="topProduct">-</p>
+                <p class="text-sm text-gray-600" id="topProductSales">0 sold</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 shadow border-l-4 border-[#ede0d4]">
+                <h3 class="text-sm font-medium text-gray-500">Avg. Order Value</h3>
+                <p class="text-2xl font-bold" id="avgOrderValue">$0</p>
+                <p class="text-sm text-gray-600">per customer</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <section class="bg-white rounded-lg p-4 md:p-6 shadow mb-8">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-[#6f4e37]"></i> Sales Insights
+            </h3>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-[#f9f5f1] p-4 rounded-lg">
+                    <h4 class="text-md font-medium mb-3">Monthly Sales Trend</h4>
+                    <div class="relative h-64 md:h-80">
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-[#f9f5f1] p-4 rounded-lg">
+                    <h4 class="text-md font-medium mb-3">Top Selling Products</h4>
+                    <div class="relative h-64 md:h-80">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-[#f9f5f1] p-4 rounded-lg">
+                    <h4 class="text-md font-medium mb-3">Order Volume</h4>
+                    <div class="relative h-64 md:h-80">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-[#f9f5f1] p-4 rounded-lg">
+                    <h4 class="text-md font-medium mb-3">Customer Regions</h4>
+                    <div class="relative h-64 md:h-80">
+                        <canvas id="customerRegionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#f9f5f1] p-4 rounded-lg">
+                <h4 class="text-md font-medium mb-3">Sales by Weekday</h4>
+                <div class="relative h-64 md:h-80">
+                    <canvas id="weekdayChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Customers Table -->
+        <section class="bg-white rounded-lg p-4 md:p-6 shadow mb-8">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fas fa-users mr-2 text-[#6f4e37]"></i> Customer Details
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-[#f3e5d8]">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-[#3e2f1c] uppercase tracking-wider">
+                                Customer</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-[#3e2f1c] uppercase tracking-wider">
+                                Email</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-[#3e2f1c] uppercase tracking-wider">
+                                Orders</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-[#3e2f1c] uppercase tracking-wider">
+                                Total Spent</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-[#3e2f1c] uppercase tracking-wider">
+                                Last Order</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-sm text-gray-500" id="tableSummary">
+                Showing <span id="customerCount">0</span> customers
+            </div>
+        </section>
+    </main>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+            authDomain: "authenticate-56ae0.firebaseapp.com",
+            databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "authenticate-56ae0",
+            storageBucket: "authenticate-56ae0.appspot.com",
+            messagingSenderId: "644131826602",
+            appId: "1:644131826602:web:76b7bee06f711c666e59d3",
+            measurementId: "G-E76HLJH4H5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        let currentUserId = null;
+        let lastMonthSales = 0;
+        let lastMonthOrders = 0;
+
+        // Auth check
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                currentUserId = user.uid;
+                loadVendorInsights();
+            }
+        });
+
+        const ordersRef = ref(db, 'orders');
+
+        function loadVendorInsights() {
+            get(ordersRef).then((snapshot) => {
+                const extractVendorOrders = (data, vendorId) => {
+                    let vendorOrders = [];
+                    let customers = {};
+
+                    Object.entries(data).forEach(([customerId, customerOrders]) => {
+                        Object.entries(customerOrders).forEach(([orderId, order]) => {
+                            const vendorItems = order.items.filter(item => item.vendorId === vendorId);
+                            if (vendorItems.length > 0) {
+                                const vendorOrder = {
+                                    ...order,
+                                    id: orderId,
+                                    customerId: customerId,
+                                    items: vendorItems,
+                                    totalAmount: vendorItems.reduce((sum, item) => sum + (Number(item.price) * Number(item.quantity)), 0)
+                                };
+                                vendorOrders.push(vendorOrder);
+
+                                // Track customer data
+                                if (!customers[customerId]) {
+                                    customers[customerId] = {
+                                        name: order.email?.split('@')?.[0]?.toUpperCase() || 'Unknown',
+                                        email: order.email || 'unknown@email.com',
+                                        orderCount: 0,
+                                        totalSpent: 0,
+                                        lastOrder: 0
+                                    };
+                                }
+                                customers[customerId].orderCount += 1;
+                                customers[customerId].totalSpent += vendorOrder.totalAmount;
+                                if (order.timestamp > customers[customerId].lastOrder) {
+                                    customers[customerId].lastOrder = order.timestamp;
+                                }
+                            }
+                        });
+                    });
+
+                    return { orders: vendorOrders, customers: customers };
+                };
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const { orders, customers } = extractVendorOrders(data, currentUserId);
+
+                    // Calculate metrics
+                    const salesByMonth = {};
+                    const ordersByMonth = {};
+                    const productCounts = {};
+                    const regions = {};
+                    const weekdays = Array(7).fill(0);
+                    let totalSales = 0;
+                    let totalOrders = orders.length;
+
+                    // Current and previous month calculations
+                    const currentDate = new Date();
+                    const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+                    const prevDate = new Date();
+                    prevDate.setMonth(prevDate.getMonth() - 1);
+                    const prevMonth = `${prevDate.getFullYear()}-${prevDate.getMonth() + 1}`;
+
+                    orders.forEach(order => {
+                        const date = new Date(order.timestamp);
+                        const month = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                        const weekday = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+                        // Sales data
+                        salesByMonth[month] = (salesByMonth[month] || 0) + order.totalAmount;
+                        totalSales += order.totalAmount;
+
+                        // Orders data
+                        ordersByMonth[month] = (ordersByMonth[month] || 0) + 1;
+
+                        // Weekday data
+                        weekdays[weekday] = (weekdays[weekday] || 0) + order.totalAmount;
+
+                        // Product data
+                        order.items?.forEach(item => {
+                            productCounts[item.name] = (productCounts[item.name] || 0) + (Number(item.quantity) || 1);
+                        });
+
+                        // Region data
+                        const emailParts = order.email.split('@');
+                        const domain = emailParts.length > 1 ? emailParts[1] : 'unknown';
+                        const region = domain.split('.')[0] || 'unknown';
+                        regions[region] = (regions[region] || 0) + 1;
+                    });
+
+                    // Calculate previous month data for comparison
+                    lastMonthSales = salesByMonth[prevMonth] || 0;
+                    lastMonthOrders = ordersByMonth[prevMonth] || 0;
+                    const currentMonthSales = salesByMonth[currentMonth] || 0;
+                    const currentMonthOrders = ordersByMonth[currentMonth] || 0;
+
+                    // Update summary cards
+                    updateSummaryCards(totalSales, totalOrders, productCounts, currentMonthSales, currentMonthOrders);
+
+                    // Render charts
+                    renderCharts(salesByMonth, ordersByMonth, productCounts, regions, weekdays);
+
+                    // Render customer table
+                    renderCustomerTable(customers);
+                }
+            });
+        }
+
+        function updateSummaryCards(totalSales, totalOrders, productCounts, currentMonthSales, currentMonthOrders) {
+            // Format currency
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+            // Update total sales
+            document.getElementById('totalSales').textContent = formatter.format(totalSales);
+
+            // Calculate sales change
+            const salesChange = lastMonthSales > 0 ?
+                Math.round(((currentMonthSales - lastMonthSales) / lastMonthSales) * 100) : 100;
+
+            const salesChangeElement = document.getElementById('salesChange');
+            salesChangeElement.textContent = `${Math.abs(salesChange)}%`;
+            salesChangeElement.parentElement.className = `text-sm flex items-center ${salesChange >= 0 ? 'text-green-600' : 'text-red-600'
+                }`;
+            salesChangeElement.parentElement.querySelector('i').className =
+                `fas ${salesChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1`;
+
+            // Update total orders
+            document.getElementById('totalOrders').textContent = totalOrders;
+
+            // Calculate orders change
+            const ordersChange = lastMonthOrders > 0 ?
+                Math.round(((currentMonthOrders - lastMonthOrders) / lastMonthOrders * 100)) : 100;
+            const ordersChangeElement = document.getElementById('ordersChange');
+            ordersChangeElement.textContent = `${Math.abs(ordersChange)}%`;
+            ordersChangeElement.parentElement.className = `text-sm flex items-center ${ordersChange >= 0 ? 'text-green-600' : 'text-red-600'
+                }`;
+            ordersChangeElement.parentElement.querySelector('i').className =
+                `fas ${ordersChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1`;
+
+            // Update top product
+            let topProduct = '';
+            let topProductCount = 0;
+            for (const [product, count] of Object.entries(productCounts)) {
+                if (count > topProductCount) {
+                    topProduct = product;
+                    topProductCount = count;
+                }
+            }
+            document.getElementById('topProduct').textContent = topProduct || '-';
+            document.getElementById('topProductSales').textContent = `${topProductCount} sold`;
+
+            // Update average order value
+            const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+            document.getElementById('avgOrderValue').textContent = formatter.format(avgOrderValue);
+        }
+
+        function renderCharts(sales, orders, products, regions, weekdays) {
+            // Common chart options
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            };
+
+            // Sales Trend Chart (Line)
+            const salesLabels = Object.keys(sales).sort();
+            const salesValues = salesLabels.map(month => sales[month]);
+
+            new Chart(document.getElementById('salesTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: salesLabels,
+                    datasets: [{
+                        label: 'Sales Amount',
+                        data: salesValues,
+                        borderColor: '#6f4e37',
+                        backgroundColor: 'rgba(111, 78, 55, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Sales: $${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Top Products Chart (Bar)
+            const productEntries = Object.entries(products).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            const productLabels = productEntries.map(([name]) => name);
+            const productValues = productEntries.map(([_, count]) => count);
+
+            new Chart(document.getElementById('topProductsChart'), {
+                type: 'bar',
+                data: {
+                    labels: productLabels,
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: productValues,
+                        backgroundColor: '#a9745d',
+                        borderColor: '#6f4e37',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y', // Horizontal bars
+                    plugins: {
+                        ...commonOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Sold: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Orders Chart (Line)
+            const orderLabels = Object.keys(orders).sort();
+            const orderValues = orderLabels.map(month => orders[month]);
+
+            new Chart(document.getElementById('ordersChart'), {
+                type: 'line',
+                data: {
+                    labels: orderLabels,
+                    datasets: [{
+                        label: 'Number of Orders',
+                        data: orderValues,
+                        borderColor: '#d3b8ae',
+                        backgroundColor: 'rgba(211, 184, 174, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: commonOptions
+            });
+
+            // Customer Region Chart (Doughnut)
+            const regionEntries = Object.entries(regions).sort((a, b) => b[1] - a[1]);
+            const regionLabels = regionEntries.map(([region]) => region);
+            const regionValues = regionEntries.map(([_, count]) => count);
+
+            new Chart(document.getElementById('customerRegionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: regionLabels,
+                    datasets: [{
+                        data: regionValues,
+                        backgroundColor: [
+                            '#6f4e37', '#a9745d', '#d3b8ae', '#ede0d4',
+                            '#c9a88e', '#8c6a50', '#4e3628', '#f3e5d8'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    cutout: '70%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // Weekday Sales Chart (Bar)
+            const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const weekdayValues = weekdays;
+
+            new Chart(document.getElementById('weekdayChart'), {
+                type: 'bar',
+                data: {
+                    labels: weekdayLabels,
+                    datasets: [{
+                        label: 'Sales by Weekday',
+                        data: weekdayValues,
+                        backgroundColor: '#6f4e37',
+                        borderColor: '#4e3628',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Sales: $${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCustomerTable(customers) {
+            const tableBody = document.getElementById('customerTableBody');
+            tableBody.innerHTML = '';
+
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+            const dateFormatter = new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            let customerCount = 0;
+
+            for (const [customerId, customer] of Object.entries(customers)) {
+                customerCount++;
+                const row = document.createElement('tr');
+                row.className = customerCount % 2 === 0 ? 'bg-[#f9f5f1]' : 'bg-white';
+
+                row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-[#6f4e37] flex items-center justify-center text-white">
+                ${customer.name.charAt(0).toUpperCase()}
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">${customer.name}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${customer.email}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#ede0d4] text-[#3e2f1c]">
+              ${customer.orderCount}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            ${formatter.format(customer.totalSpent)}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            ${customer.lastOrder ? dateFormatter.format(new Date(customer.lastOrder)) : 'N/A'}
+          </td>
+        `;
+
+                tableBody.appendChild(row);
+            }
+
+            document.getElementById('customerCount').textContent = customerCount;
+        }
+
+        window.logout = function () {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        };
+
+        // Make charts responsive on window resize
+        window.addEventListener('resize', function () {
+            if (typeof Chart !== 'undefined') {
+                Chart.getChart("salesTrendChart")?.resize();
+                Chart.getChart("topProductsChart")?.resize();
+                Chart.getChart("ordersChart")?.resize();
+                Chart.getChart("customerRegionChart")?.resize();
+                Chart.getChart("weekdayChart")?.resize();
+            }
+        });
+    </script>
+</body>
+
+</html>
