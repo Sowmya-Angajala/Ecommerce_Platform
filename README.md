@@ -3,7 +3,6 @@
 # Introduction
 **BrewBite** is a curated e-commerce platform built to bridge the gap between coffee lovers and local sellers of premium brews, gourmet snacks, and handcrafted gear. Focused on highlighting India's rich coffee heritage, the platform empowers small businesses to reach broader audiences, while offering customers a personalized and seamless shopping experience.
 
-
 The platform supports two key roles – **vendors** and **customers** – with tailored dashboards and workflows for each. Vendors can manage their product listings, track orders, launch exclusive offers, and view performance insights. Customers, on the other hand, can browse curated sections like *New Arrivals*, *Exclusive Sales*, and *Trending Products*, while managing their wishlist, cart, reviews, and orders.
 
 A responsive, mobile-friendly interface ensures that BrewBite delivers a delightful experience across all devices. Integration with **Firebase** for authentication and database management, and **PayPal** for real-time checkout, allows the platform to scale with reliability and security.
