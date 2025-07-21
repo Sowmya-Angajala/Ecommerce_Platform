@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> ☕ BrewBite – Handcrafted Coffee & Artisan Treats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Special Elite', cursive;
+      background-color: #fff8f2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="bg-[#3e2f1c] text-white py shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-[#fbeade]">☕ BrewBite</h1>
+      <nav class="hidden md:flex gap-6 items-center text-lg">
+        <a href="home.html" class="hover:text-[#fbeade] transition">Home</a>
+        <a href="shop.html" class="hover:text-[#fbeade] transition">Shop</a>
+        <a href="about.html" class="hover:text-[#a0522d] transition">About</a>
+        <a href="blog.html" class="hover:text-[#a0522d] transition">Blog</a>
+        <a href="login.html" class="text-[#fbeade] hover:text-[#a0522d] transition"> 👤Login</a>
+        <a href="signup.html" class="bg-[#6f4e37] text-white px-4 py-2 rounded-md hover:bg-[#593e2a] transition">Sign
+          Up</a>
+
+      </nav>
+      <button id="menuToggle" class="md:hidden text-3xl">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="text-center py-24 px-6 bg-gradient-to-b from-[#fdf6f0] to-[#fceee0]">
+    <h2 class="text-4xl md:text-5xl font-bold mb-4 text-[#3e2f1c]">Handcrafted Coffee ☕& Artisan Treats 🍩</h2>
+
+    <p class="text-lg md:text-xl mb-8 max-w-xl mx-auto">
+      BrewBite brings cozy coffeehouse vibes to your doorstep – with small-batch brews, snack boxes, and more!
+    </p>
+    <!-- <div class="flex justify-center gap-4">
+      <a href="explore.html" class="bg-[#6f4e37] text-white px-6 py-3 rounded-lg hover:bg-[#593e2a] transition">Explore Now</a>
+      <a href="#" class="border border-[#6f4e37] text-[#6f4e37] px-6 py-3 rounded-lg hover:bg-[#fbeade] transition">Join as Vendor</a>
+    </div> -->
+
+
+    <!-- Hero Section -->
+    <h1 class="text-4xl md:text-5xl font-bold text-[#3e2f1c] mb-4">Explore BrewBite Delights</h1>
+    <p class="text-lg md:text-xl mb-8 max-w-xl mx-auto">Dive into the world of handpicked coffees, cozy snacks, and
+      stories brewed from the heart of Indian coffee estates.</p>
+
+
+    <!-- Coffee Products -->
+    <!-- <section class="py-16 bg-white px-6"> -->
+    <h2 class="text-3xl font-bold text-center text-[#3e2f1c] mb-10">Signature Coffee Blends 🥤</h2>
+    <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      <div class="shadow-lg rounded-xl overflow-hidden">
+        <img src="./image/Coorg Arabica Roast.jpeg" alt="Coorg Coffee" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold">Coorg Arabica Roast</h3>
+          <p class="text-[#6f4e37] mt-2">Smooth, chocolatey, and deeply aromatic. Grown in the hills of Coorg.</p>
+        </div>
+      </div>
+      <div class="shadow-lg rounded-xl overflow-hidden">
+        <img src="./image/chikmaglur.jpg" alt="Chikmagalur Coffee" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold">Chikmagalur Premium Blend</h3>
+          <p class="text-[#6f4e37] mt-2">Balanced acidity and sweet notes, from India's oldest coffee region.</p>
+        </div>
+      </div>
+      <div class="shadow-lg rounded-xl overflow-hidden">
+        <img src="./image/Handpickedbeans.jpg" alt="Single Origin" class="w-full h-64 object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold">Single Origin Perfection</h3>
+          <p class="text-[#6f4e37] mt-2">Handpicked beans, roasted to highlight origin character and purity.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Snacks and Croissants -->
+    <section class="text-center py-24 px-6 bg-gradient-to-b from-[#fdf6f0] to-[#fceee0]">
+      <div class="flex flex-col justify-center">
+        <h3 class="text-2xl font-semibold mb-3">Handcrafted Croissants & Nut Mixes</h3>
+        <p class="text-[#6f4e37]">Artisan bakes and health-conscious munchies, paired perfectly with our brews.</p>
+      </div>
+
+      <h2 class="text-3xl font-bold text-center text-[#3e2f1c] mb-10">Gourmet Snacks & Fresh Bakes</h2>
+
+      <div class="grid md:grid-cols-2 gap-10 max-w-3xl mx-auto">
+        <div>
+          <img src="./image/snacks.jpg" alt="Snack Box 1" class="rounded-lg shadow-md w-full object-cover">
+        </div>
+        <div>
+          <img src="./image/gourmet snack2.jpg" alt="Snack Box 2" class="rounded-lg shadow-md w-full object-cover">
+        </div>
+      </div>
+    </section>
+
+    <!-- Coffee Syrups -->
+    <section>
+      <h2 class="text-3xl font-bold text-center text-[#3e2f1c] mb-10">Flavored Coffee Syrups</h2>
+      <div class="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+        <div class="w-60 text-center">
+          <img src="./image/madagascar.jpg" class="rounded shadow" alt="Vanilla Syrup">
+          <p class="mt-2 font-medium text-[#6f4e37]">Madagascar Vanilla</p>
+        </div>
+        <div class="w-60 text-center">
+          <img src="./image/Hazelnut Syrup.jpg" class="rounded shadow" alt="Hazelnut Syrup">
+          <p class="mt-2 font-medium text-[#6f4e37]">Hazelnut Delight</p>
+        </div>
+        <div class="w-60 text-center">
+          <img src="./image/caramel2.jpg" class="rounded shadow" alt="Caramel Syrup">
+          <p class="mt-2 font-medium text-[#6f4e37]">Rich Caramel</p>
+        </div>
+      </div>
+    </section>
+    <!-- Coffee Origins -->
+    <h2 class="text-3xl font-bold text-center text-[#3e2f1c] mb-10">Our Coffee Roots – From Bean to Brew</h2>
+    <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      <div>
+        <img src="./image/coorg.jpg" alt="Coorg Estate" class="rounded-lg shadow-lg">
+        <p class="mt-4 text-[#6f4e37]">Coorg – Known for high-altitude Arabica with nutty, rich notes.</p>
+      </div>
+      <div>
+        <img src="./image/chik Realestate.jpg" alt="Chikmagalur Estate" class="rounded-lg shadow-lg">
+        <p class="mt-4 text-[#6f4e37]">Chikmagalur – India's coffee birthplace, producing balanced, fruity beans.</p>
+      </div>
+    </div>
+
+    <!-- Women Empowerment -->
+    <h2 class="text-3xl font-bold text-center text-[#3e2f1c] mb-10">Empowering Women in Coffee</h2>
+    <div class="max-w-5xl mx-auto text-center">
+      <img src="./image/women.jpg" alt="Working Women" class="mx-auto rounded shadow-xl mb-6 w-full md:w-3/4">
+      <p class="text-lg text-[#6f4e37] max-w-2xl mx-auto">
+        From plantation to packaging, BrewBite proudly supports women-led coffee initiatives across South India. Every
+        cup contributes to sustainable livelihoods.
+      </p>
+    </div>
+
+
+    <!-- Call to Action -->
+    <h2 class="text-4xl font-bold mb-4">Ready to Brew Your Story?</h2>
+    <p class="text-lg mb-6">Join the BrewBite journey today – savor India’s finest, from beans to bites.</p>
+    <a href="signup.html" class="bg-white text-[#6f4e37] px-6 py-3 rounded-full font-semibold hover:bg-[#fbeade]">
+
+
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#fff8f2] border-t-4 border-[#c58c4a] text-[#3e2f1c] px-8 py-10 mt-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <!-- Contact Us -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Contact Us</h3>
+        <p>BrewBite HQ,<br> Bengaluru - 560001</p>
+        <p class="mt-2">Phone: +91 98765 43210</p>
+        <p>Email: <a href="mailto:support@brewbite.in" class="text-[#c58c4a] hover:underline">support@brewbite.in</a>
+        </p>
+      </div>
+
+      <!-- About -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">About</h3>
+        <ul class="space-y-1">
+          <li><a href="#">About BrewBite</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Press & Media</a></li>
+          <li><a href="#">Partner With Us</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Shop Online -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Shop Online</h3>
+        <ul class="space-y-1">
+          <li><a href="#">Coffee Beans</a></li>
+          <li><a href="#">Gourmet Snacks</a></li>
+          <li><a href="#">Brew Gear</a></li>
+          <li><a href="#">Subscription Boxes</a></li>
+          <li><a href="#">Gift Boxes</a></li>
+          <li><a href="#">Track Your Order</a></li>
+          <li><a href="#">Return Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Social & Rewards -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Get Connected</h3>
+        <div class="flex gap-4 mb-4">
+          <a href="https://x.com/"><img src="./image/twitter-svgrepo-com.svg" alt="Twitter" class="w-5 h-5" /></a>
+          <a href="https://www.instagram.com/"><img src="./image/instagram-1-svgrepo-com.svg" alt="Instagram"
+              class="w-5 h-5" /></a>
+          <a href="https://www.whatsapp.com/"><img src="./image/whatsapp-icon-logo-svgrepo-com.svg" alt="Whatsapp"
+              class="w-5 h-5" /></a>
+          <a href="https://www.facebook.com"><img src="./image/facebook-color-svgrepo-com.svg" alt="Facebook"
+              class="w-5 h-5" /></a>
+        </div>
+        <a href="#" class="inline-block bg-[#c58c4a] text-white px-4 py-2 rounded-full hover:bg-[#b47d3f]">
+          🎁 Earn Points & Get Discounts
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="bg-[#3e2f1c] text-white p-6 text-center text-3xl font-bold tracking-wide shadow-md"></div>
+    <p>© 2025 BrewBite | Brewed with Love in India | Powered by Firebase</p>
+    </div>
+  </footer>
+
+  <!-- Mobile Menu Script -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+
+</html>
