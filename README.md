@@ -140,3 +140,19 @@ This stack provides:
 
  ☕ **BrewBite** is more than just a coffee marketplace — it’s a thoughtfully designed experience that connects local creators with mindful consumers. Built with simplicity, scalability, and user delight at its core, the platform aims to showcase the richness of India's artisanal brews and snacks while empowering independent sellers with digital tools that are accessible and powerful.
 
+## Git Bash
+
+[Visit my GitHub Repository](https://github.com/Sowmya-Angajala/Ecommerce_Platform/tree/main/Brewbite)
+
+
+## Netlify 
+
+[Live Demo on Netlify](https://storied-gumption-dc9d67.netlify.app/)
+
+## Youtube
+
+[Youtube Presentation Video Link](https://youtu.be/lvhtxmQ1GxQ)
+
+[Youtube Link for Questions link](https://youtu.be/Kht34F9SHaM)
+
+
