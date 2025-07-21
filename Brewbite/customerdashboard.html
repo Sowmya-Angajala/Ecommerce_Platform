@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrewBite – Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #fef9f5;
+        }
+
+        h1 {
+            color: #4b2e2e;
+        }
+
+        .product,
+        .cart-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+
+        .cart {
+            margin-top: 30px;
+            background: #fff0e5;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            background-color: #5d4037;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3e2723;
+        }
+
+        .search-filter-bar {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #fff3e6;
+            border-radius: 8px;
+        }
+
+        .search-filter-bar input,
+        .search-filter-bar select {
+            margin-right: 10px;
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #h1 {
+            font-family: 'Pacifico', cursive;
+        }
+
+        #h2 {
+            font-family: 'Pacifico', cursive;
+            color: #9c6410;
+            font-size: 35px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        #yourOrders:hover,
+        #cart-item:hover {
+            background-color: #3e2723;
+            transform: scale(1.05);
+        }
+
+        #productList {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Product Card Styles */
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image-container {
+            height: 200px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-details {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .product-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .product-actions button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* Review Modal Styles */
+        #reviewModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .review-modal-content {
+            background-color: #fff8f2;
+            padding: 25px;
+            border-radius: 12px;
+            width: 350px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            font-family: sans-serif;
+            color: #4b2e2e;
+        }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            margin: 30px 0;
+            padding: 0 40px;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            gap: 20px;
+            padding: 20px 0;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari */
+        }
+
+        .carousel-item {
+            flex: 0 0 300px;
+            scroll-snap-align: start;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1;
+            border: none;
+            font-size: 20px;
+            color: #5d4037;
+        }
+
+        .carousel-nav:hover {
+            background: white;
+        }
+
+        .carousel-prev {
+            left: 0;
+        }
+
+        .carousel-next {
+            right: 0;
+        }
+
+        /* Animated Heading */
+        .animated-heading {
+            position: relative;
+            overflow: hidden;
+            padding: 10px 0;
+        }
+
+        .animated-heading h2 {
+            display: inline-block;
+            position: relative;
+            animation: slideIn 1.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e53935;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #43a047;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .search-filter-bar {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-filter-bar input,
+            .search-filter-bar select {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            .carousel-item {
+                flex: 0 0 250px;
+            }
+
+            .product-actions button {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h1 id="h1">Welcome to BrewBite, <span id="userEmail"></span></h1>
+        <button onclick="logout()"
+            class="bg-white text-[#6f4e37] px-1 sm:px-4 py-4 rounded hover:bg-[#f3e5d8] text-sm sm:text-base">Logout</button>
+    </div>
+
+    <div class="search-filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by name, category, or price" />
+        <label>Price:
+            <input type="number" id="minPrice" placeholder="Min" />
+            <input type="number" id="maxPrice" placeholder="Max" />
+        </label>
+        <label>Rating:
+            <select id="ratingFilter">
+                <option value="">All</option>
+                <option value="4">4★ & up</option>
+                <option value="3">3★ & up</option>
+            </select>
+        </label>
+        <label>Availability:
+            <select id="availabilityFilter">
+                <option value="">All</option>
+                <option value="available">Available</option>
+                <option value="outofstock">Out of Stock</option>
+            </select>
+        </label>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: right; margin-bottom: 10px;">
+        <button id="yourOrders" style="background-color: #9c6410; padding: 10px 15px; font-size: 16px;"
+            onclick="window.location.href='orders.html'">Your Orders 📦</button>
+        <button id="wishlistBtn"
+            style="background-color: #9c6410; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px;"
+            onclick="document.getElementById('wishlistSection').scrollIntoView({ behavior: 'smooth' });">Wishlist
+            ❤️</button>
+        <button id="cart-item"
+            style="background-color: #9c6410; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px;"
+            onclick="window.location.href='cart.html'">Go To Cart 🛒</button>
+        <!-- <button onclick="logout()" class="bg-white text-[#6f4e37] px-3 sm:px-4 py-1 rounded hover:bg-[#f3e5d8] text-sm sm:text-base">Logout</button> -->
+    </div>
+    <!-- Exclusive Offers Carousel -->
+    <div class="animated-heading">
+        <h2 id="h2">Exclusive Offers </h2>
+    </div>
+    <div class="carousel-container">
+        <button class="carousel-nav carousel-prev" onclick="scrollCarousel('sales', -300)"><i
+                class="fas fa-chevron-left"></i></button>
+        <div id="salesCarousel" class="carousel"></div>
+        <button class="carousel-nav carousel-next" onclick="scrollCarousel('sales', 300)"><i
+                class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <!-- New For You Carousel -->
+    <div class="animated-heading">
+        <h2 id="h2">New For You</h2>
+    </div>
+    <div class="carousel-container">
+        <button class="carousel-nav carousel-prev" onclick="scrollCarousel('arrivals', -300)"><i
+                class="fas fa-chevron-left"></i></button>
+        <div id="arrivalsCarousel" class="carousel"></div>
+        <button class="carousel-nav carousel-next" onclick="scrollCarousel('arrivals', 300)"><i
+                class="fas fa-chevron-right"></i></button>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <h2 id="h2">Available Products</h2>
+    </div>
+    <div id="productList"></div>
+
+
+    <!-- Wishlist Section -->
+    <div id="wishlistSection">
+        <h2 id="h2">Your Wishlist ❤️</h2>
+        <div id="wishlistItems" class="cart"></div>
+        <div style="text-align: center; margin-top: 15px;">
+            <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" style="background-color: #9c6410;">
+                Continue Shopping 🔼
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Review Modal -->
+    <div id="reviewModal">
+        <div class="review-modal-content">
+            <h3 id="reviewProductName">Write a Review</h3>
+            <label>Rating:
+                <select id="ratingSelect">
+                    <option value="">Select rating</option>
+                    <option value="5">5 ★</option>
+                    <option value="4">4 ★</option>
+                    <option value="3">3 ★</option>
+                    <option value="2">2 ★</option>
+                    <option value="1">1 ★</option>
+                </select>
+            </label>
+            <br><br>
+            <label>Review:</label><br>
+            <textarea id="reviewText" rows="4" style="width:100%;"></textarea>
+            <br><br>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeReviewModal()">Cancel</button>
+                <button onclick="submitReview()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import {
+            getDatabase, ref, set, get, push, onValue, update
+        } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+            authDomain: "authenticate-56ae0.firebaseapp.com",
+            databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "authenticate-56ae0",
+            storageBucket: "authenticate-56ae0.appspot.com",
+            messagingSenderId: "644131826602",
+            appId: "1:644131826602:web:76b7bee06f711c666e59d3",
+            measurementId: "G-E76HLJH4H5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        let cart = [];
+        let allProducts = [];
+        let allSales = [];
+        let allArrivals = [];
+
+        const cartItemsDiv = document.getElementById("cartItems");
+        const productList = document.getElementById("productList");
+        const salesCarousel = document.getElementById("salesCarousel");
+        const arrivalsCarousel = document.getElementById("arrivalsCarousel");
+
+        // Carousel scrolling function
+        window.scrollCarousel = (type, amount) => {
+            const carousel = type === 'sales' ? salesCarousel : arrivalsCarousel;
+            carousel.scrollBy({ left: amount, behavior: 'smooth' });
+        };
+        window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+
+        function renderProductCard(product, container, isSale = false, isArrival = false) {
+            const productId = product.name.replace(/\s+/g, "_");
+            const div = document.createElement("div");
+            div.className = isSale || isArrival ? "carousel-item" : "";
+
+            const card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML = `
+                <div class="product-image-container">
+                    ${product.image ? `<img src="${product.image}" alt="${product.name}" class="product-image">` :
+                    `<div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>`}
+                    ${isSale ? `<div class="sale-badge">SALE!</div>` : ''}
+                    ${isArrival ? `<div class="new-badge">NEW!</div>` : ''}
+                </div>
+                <div class="product-details">
+                    <h3 style="font-weight:bold; margin-bottom:5px;">${product.name}</h3>
+                    <p style="color:#6f4e37; font-weight:bold; margin-bottom:5px;">₹${product.price}</p>
+                    <p style="font-size:14px; color:#666; margin-bottom:10px;">${product.description || ""}</p>
+                    <div class="product-actions">
+                        <button class="add-btn">Add to Cart</button>
+                        <button class="wishlist-btn">Wishlist ❤️</button>
+                        <button class="review-btn">Review ⭐</button>
+                    </div>
+                    <button class="toggle-reviews-btn" data-id="${productId}" style="margin-top:10px; width:100%;">View Reviews</button>
+                    <div class="reviews-container" id="reviews-${productId}" style="display:none; margin-top: 10px;"></div>
+                </div>
+            `;
+
+            card.querySelector(".add-btn").addEventListener("click", () => addToCart(product));
+            card.querySelector(".wishlist-btn").addEventListener("click", () => addToWishlist(product));
+            card.querySelector(".review-btn").addEventListener("click", () => promptReview(product));
+            card.querySelector(".toggle-reviews-btn").addEventListener("click", () => toggleReviews(productId));
+
+            div.appendChild(card);
+            container.appendChild(div);
+        }
+
+        function loadProducts() {
+            // Load regular products
+            const itemsRef = ref(database, 'products');
+            onValue(itemsRef, (snapshot) => {
+                allProducts = [];
+                productList.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const product = childSnapshot.val();
+                    allProducts.push(product);
+                    renderProductCard(product, productList);
+                });
+            });
+
+            // Load sales products
+            const salesRef = ref(database, 'sales');
+            onValue(salesRef, (snapshot) => {
+                allSales = [];
+                salesCarousel.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const product = childSnapshot.val();
+                    allSales.push(product);
+                    renderProductCard(product, salesCarousel, true);
+                });
+            });
+
+            // Load arrivals products
+            const arrivalsRef = ref(database, 'arrivals');
+            onValue(arrivalsRef, (snapshot) => {
+                allArrivals = [];
+                arrivalsCarousel.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const product = childSnapshot.val();
+                    allArrivals.push(product);
+                    renderProductCard(product, arrivalsCarousel, false, true);
+                });
+            });
+        }
+
+        function renderCart() {
+            cartItemsDiv.innerHTML = "";
+            let total = 0;
+            cart.forEach((item, index) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "cart-item";
+                itemDiv.innerHTML = `
+                    <strong>${item.name}</strong> - ₹${item.price} × 
+                    <input type="number" min="1" value="${item.quantity}" onchange="updateQty(${index}, this.value)" style="width:40px"/>
+                    <button onclick="removeItem(${index})">Remove</button>
+                `;
+                total += item.price * item.quantity;
+                cartItemsDiv.appendChild(itemDiv);
+            });
+            document.getElementById("totalAmount").innerText = total;
+        }
+
+        function saveCartToFirebase(userId) {
+            const cartRef = ref(database, `carts/${userId}`);
+            set(cartRef, cart);
+        }
+
+        function loadCartFromFirebase(userId) {
+            const cartRef = ref(database, `carts/${userId}`);
+            onValue(cartRef, (snapshot) => {
+                cart = snapshot.val() || [];
+                renderCart();
+            });
+        }
+
+        window.updateQty = (index, qty) => {
+            cart[index].quantity = parseInt(qty);
+            const user = auth.currentUser;
+            if (user) saveCartToFirebase(user.uid);
+            renderCart();
+        };
+
+        window.removeItem = (index) => {
+            cart.splice(index, 1);
+            const user = auth.currentUser;
+            if (user) saveCartToFirebase(user.uid);
+            renderCart();
+        };
+
+        window.addToCart = (product) => {
+            const existing = cart.find(item => item.name === product.name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            const user = auth.currentUser;
+            if (user) saveCartToFirebase(user.uid);
+            renderCart();
+        };
+
+        window.checkout = (paymentStatus) => {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("User not logged in!");
+                return;
+            }
+
+            const orderRef = ref(database, `orders/${user.uid}`);
+            const newOrderRef = push(orderRef);
+            const orderDetails = {
+                email: user.email,
+                timestamp: new Date().toISOString(),
+                items: cart,
+                totalAmount: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+                paymentStatus: paymentStatus
+            };
+
+            set(newOrderRef, orderDetails)
+                .then(() => {
+                    alert(`Order placed successfully!\nPayment Status: ${paymentStatus}`);
+                    cart = [];
+                    saveCartToFirebase(user.uid);
+                    renderCart();
+                })
+                .catch((error) => {
+                    console.error("Error saving order:", error);
+                    alert("Failed to save order.");
+                });
+        };
+
+        function filterProducts() {
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+            const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+            const rating = document.getElementById("ratingFilter").value;
+            const availability = document.getElementById("availabilityFilter").value;
+
+            const filtered = allProducts.filter((product) => {
+                const nameMatch = product.name.toLowerCase().includes(searchText);
+                const categoryMatch = (product.category || "").toLowerCase().includes(searchText);
+                const priceMatch = product.price >= minPrice && product.price <= maxPrice;
+                const ratingMatch = !rating || (product.rating || 0) >= parseInt(rating);
+                const availabilityMatch = !availability || (availability === "available"
+                    ? product.stock !== 0
+                    : product.stock === 0);
+                return (nameMatch || categoryMatch) && priceMatch && ratingMatch && availabilityMatch;
+            });
+
+            productList.innerHTML = "";
+            filtered.forEach(product => renderProductCard(product, productList));
+        }
+
+        document.getElementById("searchInput").addEventListener("input", filterProducts);
+        document.getElementById("minPrice").addEventListener("input", filterProducts);
+        document.getElementById("maxPrice").addEventListener("input", filterProducts);
+        document.getElementById("ratingFilter").addEventListener("change", filterProducts);
+        document.getElementById("availabilityFilter").addEventListener("change", filterProducts);
+
+        // Wishlist Logic
+        window.addToWishlist = (product) => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const wishlistRef = ref(database, `wishlists/${user.uid}`);
+            get(wishlistRef).then((snapshot) => {
+                let wishlist = snapshot.val() || [];
+                if (!wishlist.some(item => item.name === product.name)) {
+                    wishlist.push(product);
+                    set(wishlistRef, wishlist);
+                }
+            });
+        };
+
+        function renderWishlist(userId) {
+            const wishlistRef = ref(database, `wishlists/${userId}`);
+            onValue(wishlistRef, (snapshot) => {
+                const wishlist = snapshot.val() || [];
+                const wishlistContainer = document.getElementById("wishlistItems");
+                wishlistContainer.innerHTML = "";
+                wishlist.forEach((item, index) => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "cart-item";
+                    itemDiv.innerHTML = `
+                        <strong>${item.name}</strong> - ₹${item.price}
+                        <button onclick="removeFromWishlist(${index})">Remove</button>
+                    `;
+                    wishlistContainer.appendChild(itemDiv);
+                });
+            });
+        }
+
+        window.removeFromWishlist = (index) => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const wishlistRef = ref(database, `wishlists/${user.uid}`);
+            get(wishlistRef).then((snapshot) => {
+                let wishlist = snapshot.val() || [];
+                wishlist.splice(index, 1);
+                set(wishlistRef, wishlist);
+            });
+        };
+
+        // Reviews
+        function toggleReviews(productId) {
+            const container = document.getElementById(`reviews-${productId}`);
+            if (container.style.display === "none") {
+                container.style.display = "block";
+                loadReviews(productId);
+            } else {
+                container.style.display = "none";
+            }
+        }
+
+        function loadReviews(productId) {
+            const reviewRef = ref(database, `reviews/${productId}`);
+            const container = document.getElementById(`reviews-${productId}`);
+            container.innerHTML = "<em>Loading reviews...</em>";
+
+            get(reviewRef).then((snapshot) => {
+                const reviews = snapshot.val();
+                container.innerHTML = "";
+
+                if (!reviews) {
+                    container.innerHTML = "<p>No reviews yet.</p>";
+                    return;
+                }
+
+                Object.values(reviews).forEach((review) => {
+                    const reviewDiv = document.createElement("div");
+                    reviewDiv.style.marginBottom = "10px";
+                    reviewDiv.style.padding = "10px";
+                    reviewDiv.style.backgroundColor = "#fff3e6";
+                    reviewDiv.style.borderRadius = "8px";
+
+                    reviewDiv.innerHTML = `
+                        <strong>${review.email || "Anonymous"}</strong><br>
+                        <span>Rating: ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span><br>
+                        <p>${review.review}</p>
+                    `;
+                    container.appendChild(reviewDiv);
+                });
+            });
+        }
+
+        let selectedProductForReview = null;
+
+        window.promptReview = (product) => {
+            const user = auth.currentUser;
+            if (!user) return alert("Login required");
+
+            selectedProductForReview = product;
+            document.getElementById("reviewProductName").innerText = `Review: ${product.name}`;
+            document.getElementById("reviewText").value = "";
+            document.getElementById("ratingSelect").value = "";
+            document.getElementById("reviewModal").style.display = "flex";
+        };
+
+        window.closeReviewModal = () => {
+            document.getElementById("reviewModal").style.display = "none";
+        };
+
+        window.submitReview = () => {
+            const user = auth.currentUser;
+            if (!user || !selectedProductForReview) return;
+
+            const rating = document.getElementById("ratingSelect").value;
+            const review = document.getElementById("reviewText").value.trim();
+
+            if (!rating || !review) {
+                alert("Please select a rating and enter your review.");
+                return;
+            }
+
+            const productId = selectedProductForReview.name.replace(/\s+/g, "_");
+            const reviewRef = ref(database, `reviews/${productId}/${user.uid}`);
+
+            set(reviewRef, {
+                email: user.email,
+                rating: parseInt(rating),
+                review: review,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                alert("Review submitted!");
+                closeReviewModal();
+            }).catch((error) => {
+                console.error("Error submitting review:", error);
+                alert("Failed to submit review.");
+            });
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("userEmail").innerText = user.email;
+                loadProducts();
+                loadCartFromFirebase(user.uid);
+                renderWishlist(user.uid);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+</body>
+
+</html>
