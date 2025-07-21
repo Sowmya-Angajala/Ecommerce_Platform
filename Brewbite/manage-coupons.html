@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Coupons – Vendor Dashboard</title>
+</head>
+<body>
+  <h2>Create New Coupon</h2>
+  <form id="couponForm">
+    <input type="text" id="code" placeholder="Coupon Code (e.g., BREW10)" required /><br/>
+    
+    <select id="type">
+      <option value="percentage">Percentage</option>
+      <option value="fixed">Fixed Amount</option>
+    </select><br/>
+
+    <input type="number" id="value" placeholder="Discount Value" required /><br/>
+    
+    <input type="text" id="appliesTo" placeholder="Applies To (e.g., all or product/category ID)" /><br/>
+    
+    <input type="number" id="minPurchase" placeholder="Minimum Purchase (optional)" /><br/>
+
+    <input type="date" id="expiresAt" required /><br/>
+
+    <button type="submit">Create Coupon</button>
+  </form>
+
+  <h3>Your Coupons</h3>
+  <ul id="couponList"></ul>
+
+  <script type="module">
+    import { getDatabase, ref, set, get, child, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Import your config
+    import { firebaseConfig } from './firebase-init.js'; // replace with your config path
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    const couponForm = document.getElementById('couponForm');
+    const couponList = document.getElementById('couponList');
+
+    let currentVendorId = null;
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        currentVendorId = user.uid;
+        loadCoupons();
+      } else {
+        alert("Please login as a vendor.");
+      }
+    });
+
+    couponForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const code = document.getElementById('code').value.trim();
+      const type = document.getElementById('type').value;
+      const value = parseFloat(document.getElementById('value').value);
+      const appliesTo = document.getElementById('appliesTo').value.trim() || "all";
+      const minPurchase = parseFloat(document.getElementById('minPurchase').value) || 0;
+      const expiresAt = new Date(document.getElementById('expiresAt').value).toISOString();
+
+      const couponRef = ref(db, `coupons/${currentVendorId}/${code}`);
+      await set(couponRef, {
+        type,
+        value,
+        appliesTo,
+        minPurchase,
+        expiresAt
+      });
+
+      alert("Coupon created!");
+      couponForm.reset();
+      loadCoupons();
+    });
+
+    function loadCoupons() {
+      const vendorRef = ref(db, `coupons/${currentVendorId}`);
+      onValue(vendorRef, (snapshot) => {
+        couponList.innerHTML = '';
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          Object.keys(data).forEach(code => {
+            const coupon = data[code];
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <strong>${code}</strong> - ${coupon.type === 'percentage' ? coupon.value + '%' : '₹' + coupon.value}
+              (Applies to: ${coupon.appliesTo}, Min: ₹${coupon.minPurchase}) – Expires: ${new Date(coupon.expiresAt).toDateString()}
+              <button onclick="deleteCoupon('${code}')">❌</button>
+            `;
+            couponList.appendChild(li);
+          });
+        } else {
+          couponList.innerHTML = "<li>No coupons yet.</li>";
+        }
+      });
+    }
+
+    window.deleteCoupon = async (code) => {
+      if (confirm(`Delete coupon ${code}?`)) {
+        await remove(ref(db, `coupons/${currentVendorId}/${code}`));
+        loadCoupons();
+      }
+    };
+  </script>
+</body>
+</html>
