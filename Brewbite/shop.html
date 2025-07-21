@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrewBite – Shop</title>
+   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Special Elite', cursive;
+      background-color: #fff8f2;
+    }
+    </style>
+</head>
+
+<body class="bg-[#fff8f2] text-[#3e2f1c]">
+  <!-- Header -->
+  <header class="bg-[#3e2f1c] text-white py-4 shadow-md">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">BrewBite Shop</h1>
+      <nav class="space-x-4">
+        <a href="shop.html" class="hover:text-[#fbeade] transition">Shop</a>
+        <a href="about.html" class="hover:text-[#a0522d] transition">About</a>
+        <a href="blog.html" class="hover:text-[#a0522d] transition">Blog</a>
+        
+        <a href="index.html" class="hover:underline">Home</a>
+        <!-- <a href="explore.html" class="hover:underline">Explore</a> -->
+        <a href="login.html" class="text-[#fbeade] hover:text-[#a0522d] transition">Login</a>
+        <a href="signup.html" class="bg-[#6f4e37] text-white px-4 py-2 rounded-md hover:bg-[#593e2a] transition">Sign Up</a>
+        
+        <!-- <a href="cart.html" class="hover:underline">Cart</a> -->
+      </nav>
+       <button id="menuToggle" class="md:hidden text-3xl">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Shop Grid -->
+  <main class="container mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center mb-10">Discover Our Products</h2>
+    <div class="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Product Card Example -->
+      <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform">
+        <img src="https://bestqualitycoffee.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/03/20005136/best-single-origin-coffee-review.jpg" alt="Coffee Beans"
+          class="w-full h-56 object-cover">
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">Single Origin Coffee Beans</h3>
+          <p class="text-sm mt-1">Rich aroma from Chikmagalur, medium roast.</p>
+          <p class="mt-2 font-bold text-lg">₹449</p>
+          <button onclick="window.location.href='signup.html'" class="mt-4 bg-[#3e2f1c] text-white px-4 py-2 rounded hover:bg-[#6d4c2e]">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform">
+        <img src="https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/catalog-image/92/MTA-126852212/c_bakes_c_bakes_-_dark_chocolate_croissant_-roti_perancis_coklat-_pastry_full02_quse56zw.jpg" alt="Dark Chocolate Croissant"
+          class="w-full h-56 object-cover">
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">Dark Chocolate Croissant</h3>
+          <p class="text-sm mt-1">Flaky, buttery & filled with dark chocolate goodness.</p>
+          <p class="mt-2 font-bold text-lg">₹199</p>
+          <button onclick="window.location.href='signup.html'" class="mt-4 bg-[#3e2f1c] text-white px-4 py-2 rounded hover:bg-[#6d4c2e]">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform">
+        <img src="https://m.media-amazon.com/images/I/51j1Ez1w64L._AC_UL480_FMwebp_QL65_.jpg" alt="Coffee Syrup"
+          class="w-30 h-56 object-cover ">
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">Vanilla Coffee Syrup</h3>
+          <p class="text-sm mt-1">Perfect for lattes, cold brews & desserts.</p>
+          <p class="mt-2 font-bold text-lg">₹349</p>
+          <button onclick="window.location.href='signup.html'" class="mt-4 bg-[#3e2f1c] text-white px-4 py-2 rounded hover:bg-[#6d4c2e]">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform">
+        <img src="https://m.media-amazon.com/images/I/81uWNYxKEpL._AC_UL480_FMwebp_QL65_.jpg" alt="Granola Bar"
+          class="w-full h-56 object-cover">
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">Nutty Granola Bar</h3>
+          <p class="text-sm mt-1">Healthy & handmade with almonds, oats & honey.</p>
+          <p class="mt-2 font-bold text-lg">₹149</p>
+          <button onclick="window.location.href='signup.html'" class="mt-4 bg-[#3e2f1c] text-white px-4 py-2 rounded hover:bg-[#6d4c2e]">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform">
+        <img src="https://m.media-amazon.com/images/I/61ylTjnj7pL._AC_UL480_FMwebp_QL65_.jpg" alt="Hazelnut Coffee Beans"
+          class="w-full h-56 object-cover">
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">Hazelnut Coffee Beans</h3>
+          <p class="text-sm mt-1">Bold flavor with a nutty twist. Perfect for pour-over.</p>
+          <p class="mt-2 font-bold text-lg">₹499</p>
+          <button onclick="window.location.href='signup.html'" class="mt-4 bg-[#3e2f1c] text-white px-4 py-2 rounded hover:bg-[#6d4c2e]">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#3e2f1c] text-white py-6 mt-10">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 BrewBite. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>
