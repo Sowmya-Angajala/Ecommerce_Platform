@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Orders – BrewBite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#fff8f2] text-[#3e2f1c]">
+  <header class="bg-[#6f4e37] text-white px-6 py-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-xl font-bold">📦 Vendor Orders</h1>
+      <button onclick="window.location.href='vendor.html'"
+        class="bg-white text-[#6f4e37] px-4 py-1 rounded hover:bg-[#f3e5d8]">Back</button>
+    </div>
+  </header>
+
+  <main class="p-6 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4">Incoming Orders</h2>
+    <div id="ordersContainer" class="space-y-4"></div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+      authDomain: "authenticate-56ae0.firebaseapp.com",
+      databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "authenticate-56ae0",
+      storageBucket: "authenticate-56ae0.appspot.com",
+      messagingSenderId: "644131826602",
+      appId: "1:644131826602:web:76b7bee06f711c666e59d3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    const ordersContainer = document.getElementById("ordersContainer");
+
+    let vendorId = null;
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      vendorId = user.uid;
+      loadVendorOrders();
+    });
+
+    function loadVendorOrders() {
+      const ordersRef = ref(db, "orders");
+      onValue(ordersRef, snapshot => {
+        ordersContainer.innerHTML = "";
+
+        snapshot.forEach(userSnapshot => {
+          userSnapshot.forEach(orderSnapshot => {
+            const order = orderSnapshot.val();
+            const orderId = orderSnapshot.key;
+
+            // Filter only if vendorId matches in any item
+            const vendorItems = order.items.filter(item => item.vendorId === vendorId);
+            if (vendorItems.length === 0) return;
+
+            const orderDiv = document.createElement("div");
+            orderDiv.className = "bg-white border rounded-lg p-4 shadow";
+
+            orderDiv.innerHTML = `
+              <h3 class="font-bold text-lg">Order ID: ${orderId}</h3>
+              <p><strong>Customer:</strong> ${userSnapshot.key}</p>
+              <p><strong>Order Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+              <p><strong>Total:</strong> ₹${order.totalAmount}</p>
+              <p><strong>Current Status:</strong> <span id="status-${orderId}">${order.deliveryStatus}</span></p>
+              <div class="my-2">
+                <strong>Items (Your Products Only):</strong>
+                <ul class="list-disc ml-5">
+                  ${vendorItems.map(item => `<li>${item.name} - ₹${item.price} × ${item.quantity}</li>`).join("")}
+                </ul>
+              </div>
+              <label for="status-select-${orderId}" class="font-semibold">Update Delivery Status:</label>
+              <select id="status-select-${orderId}" class="border p-1 rounded ml-2">
+                <option value="Processing" ${order.deliveryStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                <option value="Packed" ${order.deliveryStatus === 'Packed' ? 'selected' : ''}>Packed</option>
+                <option value="Shipped" ${order.deliveryStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                <option value="Delivered" ${order.deliveryStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+              </select>
+              <button onclick="updateOrderStatus('${userSnapshot.key}', '${orderId}')"
+                class="ml-2 px-3 py-1 bg-[#6f4e37] text-white rounded hover:bg-[#4b3525]">Update</button>
+            `;
+
+            ordersContainer.appendChild(orderDiv);
+          });
+        });
+      });
+    }
+
+    window.updateOrderStatus = function (customerUid, orderId) {
+      const selectEl = document.getElementById(`status-select-${orderId}`);
+      const newStatus = selectEl.value;
+
+      const orderRef = ref(db, `orders/${customerUid}/${orderId}`);
+      update(orderRef, { deliveryStatus: newStatus });
+      document.getElementById(`status-${orderId}`).innerText = newStatus;
+      alert("Delivery status updated.");
+    }
+  </script>
+</body>
+
+</html>
