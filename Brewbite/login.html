@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login page</title>
+    <link rel="stylesheet" href="loginstyle.css">
+</head>
+<body>
+    <!--------Login Form------->
+    <h3>Login page</h3>
+    <div class="login-container">
+        <form id="loginForm">
+            <input type="email" name="email" id="loginEmail" placeholder="Email" required>
+            <div>
+                <input type="password" name="password" id="loginPassword" placeholder="password" required>
+            </div>
+        <div>
+        <button id="loginBtn">Login </button>
+    </div>    
+    </form>
+    </div>
+    <p id="login-message">
+        If you don't have an account ? <a href="signup.html">Sign up</a>
+    </p>
+    <script type="module" src="firebase-config.js"></script>
+</body>
+</html>
