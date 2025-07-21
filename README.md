@@ -122,7 +122,6 @@ This stack provides:
 - Visual analytics with **Chart.js** for sales insights and customer metrics.
 
 
-
 ## 🎯 Highlights
 
 - Complete role-based dashboard flow for vendors and customers
