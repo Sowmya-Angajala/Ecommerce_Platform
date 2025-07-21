@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order History</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #fef9f5;
+        }
+
+        h1 {
+            color: #4b2e2e;
+        }
+#orderList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 2fr));
+    gap: 30px;
+    padding: 30px 0px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Optional background container effect */
+.orderList::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(120deg, #ffe0b2, #fff3e0);
+    z-index: -1;
+    border-radius: 0 0 50% 50%;
+}
+
+@media (min-width: 768px) {
+  .orderList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .orderList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+.order {
+    border: 1px solid #e0c3a0;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    background: #fffaf2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: slideUp 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order h3 {
+    margin: 0;
+    color: #5d4037;
+    font-size: 1.3rem;
+}
+
+.order p {
+    margin: 5px 0;
+    color: #77534c;
+}
+
+.order-items-cont {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #d7ccc8;
+}
+
+.order-items-card span {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4e342e;
+}
+
+.order-items-card img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 5px;
+    transition: transform 0.3s ease;
+}
+
+.order-items-card img:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .order {
+        padding: 15px;
+    }
+
+    .order-items-card img {
+        max-width: 80px;
+    }
+
+    .order h3 {
+        font-size: 1.1rem;
+    }
+}
+
+
+        .back-btn {
+            background-color: #5d4037;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #3e2723;
+        }
+    </style>
+</head>
+
+<body>
+   <div style="display: flex; justify-content: space-between; align-items: center; background-color: #8a635c; padding:0px 20px;" >    <h1>Your Orders</h1>
+        <button class="back-btn" onclick="window.location.href='customerdashboard.html'">← Back to Products</button>
+        </div>
+    <div id="orderList">Loading orders...</div>
+    <br />
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+            authDomain: "authenticate-56ae0.firebaseapp.com",
+            databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "authenticate-56ae0",
+            storageBucket: "authenticate-56ae0.appspot.com",
+            messagingSenderId: "644131826602",
+            appId: "1:644131826602:web:76b7bee06f711c666e59d3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const orderList = document.getElementById("orderList");
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const ordersRef = ref(database, `orders/${user.uid}`);
+            onValue(ordersRef, (snapshot) => {
+                if (!snapshot.exists()) {
+                    orderList.innerHTML = "<p>No orders found.</p>";
+                    return;
+                }
+
+                orderList.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const order = childSnapshot.val();
+
+                    const orderDiv = document.createElement("div");
+                    orderDiv.className = "order";
+                    orderDiv.innerHTML = `
+          <div class="order-text-cont">
+            
+            <p><strong>Total:</strong> ₹${order.totalAmount}</p>
+            <p><strong>Payment Status:</strong> ${order.paymentStatus || 'Completed'}</p>
+            <p><strong>Delivery Status:</strong> ${order.deliveryStatus || 'Delivered'}</p>
+            <p><strong>Placed on:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+            <p>Order ID: ${order.orderId?.split('-')?.[1] || childSnapshot.key?.split('-')?.[1]}</p>
+            <strong>Items:</strong>
+             </div>
+                            <div class="order-items-cont" >
+            <div class="order-items-card" >                    
+           
+              ${order.items.map(item =>
+                        `<span>${item?.name} - ₹${item?.price} × ${item?.quantity}</span>
+                 <img src=${item?.image} />
+                `
+                    ).join("")}
+
+           
+            </div>
+           
+ </div>
+
+          `;
+
+                    orderList.appendChild(orderDiv);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
