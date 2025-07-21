@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  /* background: linear-gradient(to right, rgb(203, 139, 139), #fff0f5); */
+  background:#fff8f2;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: top;
+   /* align to top */
+}
+#signup-container {
+  background-color: #fffafc;
+  border-radius: 20px;
+  padding: 35px 30px;
+  box-shadow: 0 8px 16px rgb(159, 123, 98);
+  width: 350px;
+  /* text-align: center; */
+  border: 2px solid rgb(213, 171, 141);
+}
+
+h3 {
+  font-family: 'Pacifico', cursive;
+  color: rgb(153, 88, 41);;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+#page-wrapper {
+  margin-top: 40px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#signupform input,
+#signupform select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1.5px solid rgb(213, 171, 141);
+  background-color: rgb(237, 222, 211);
+  font-size: 14px;
+  outline: none;
+}
+
+#signupform input::placeholder {
+  color: #a67885;
+}
+
+#signupBtn {
+  background-color: rgb(88, 46, 17);
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+#signupBtn:hover {
+  background-color:rgb(204, 156, 122);
+}
+
+#signup-message {
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgb(50, 25, 7);
+  text-align: center;
+}
+#signup-message  {
+  color: rgb(121, 68, 31);
+  text-decoration: none;
+  font-weight: bold;
+}
+#signup-heading {
+  text-align: center;
+  font-family: 'Pacifico', cursive;
+  font-size: 30px;
+  color: rgb(153, 88, 41);
+  margin-bottom: 20px;
+  padding: 10px;
+}
