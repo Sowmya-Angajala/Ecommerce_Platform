@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Dashboard – BrewBite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-[#fff8f2] text-[#3e2f1c]">
+  <!-- Header -->
+  <header class="bg-[#6f4e37] text-white px-6 py-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-xl font-bold">☕ BrewBite – Vendor Dashboard</h1>
+      <button onclick="logout()" class="bg-white text-[#6f4e37] px-4 py-1 rounded hover:bg-[#f3e5d8]">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="p-6 max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Welcome, <span id="userEmail"></span></h2>
+      <button class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525]"
+        onclick="window.location.href='vendorOrders.html'">Orders</button>
+    </div>
+
+    <!-- Sales Insights Section -->
+    <section class="bg-white rounded-lg p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">📊 Sales Insights</h3>
+      <div class="grid md:grid-cols-3 gap-6 text-center mb-6">
+        <div class="bg-[#fef3e7] p-4 rounded shadow">
+          <h4 class="text-lg font-bold">Total Sales</h4>
+          <p id="totalSales" class="text-2xl font-semibold mt-2">₹0</p>
+        </div>
+        <div class="bg-[#fef3e7] p-4 rounded shadow">
+          <h4 class="text-lg font-bold">Top Product</h4>
+          <p id="topProduct" class="text-xl mt-2">N/A</p>
+        </div>
+        <div class="bg-[#fef3e7] p-4 rounded shadow">
+          <h4 class="text-lg font-bold">Unique Customers</h4>
+          <p id="uniqueCustomers" class="text-xl mt-2">0</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-semibold mb-2">Sales Trend</h4>
+          <canvas id="salesChart"></canvas>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-2">Top Products</h4>
+          <canvas id="productChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add Product Form -->
+    <section class="bg-white rounded-lg p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">Add New Product</h3>
+      <form id="productForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" id="productName" placeholder="Product Name" class="p-2 border rounded" required>
+        <input type="number" id="price" placeholder="Price" class="p-2 border rounded" required>
+
+        <select id="category" class="p-2 border rounded" required>
+          <option value="">Select Category</option>
+          <option value="coffee_beans">Coffee Beans</option>
+          <option value="gourmet_snacks">Gourmet Snacks</option>
+          <option value="brew_gear">Brew Gear</option>
+          <option value="subscription_boxes">Subscription Boxes</option>
+          <option value="gift_boxes">Gift Boxes</option>
+        </select>
+
+        <input type="text" id="image" placeholder="Image URL" class="p-2 border rounded">
+        <textarea id="description" placeholder="Description" class="p-2 border rounded col-span-full"></textarea>
+        <div id="extraFields" class="grid gap-4 md:grid-cols-2 col-span-full"></div>
+
+        <button type="submit"
+          class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full">Add Product</button>
+      </form>
+    </section>
+
+    <select onchange="updateStatus(orderId, this.value)">
+      <option>Processing</option>
+      <option>Shipped</option>
+      <option>Delivered</option>
+    </select>
+
+    <!-- Product List -->
+    <section class="bg-white rounded-lg p-6 shadow">
+      <h3 class="text-lg font-semibold mb-4">Your Products</h3>
+      <div id="productList" class="grid gap-4 md:grid-cols-2"></div>
+    </section>
+  </main>
+
+  <!-- Coupon Management Section -->
+  <section class="bg-white rounded-lg p-6 shadow mb-8">
+    <h3 class="text-lg font-semibold mb-4">Manage Discount Coupons</h3>
+    <form id="couponForm" class="grid md:grid-cols-2 gap-4">
+      <input type="text" id="code" placeholder="Coupon Code (e.g., BREW10)" class="p-2 border rounded" required>
+      <select id="type" class="p-2 border rounded">
+        <option value="percentage">Percentage</option>
+        <option value="fixed">Fixed Amount</option>
+      </select>
+      <input type="number" id="value" placeholder="Discount Value" class="p-2 border rounded" required>
+      <input type="text" id="appliesTo" placeholder="Applies to (e.g., all or category/product ID)" class="p-2 border rounded">
+      <input type="number" id="minPurchase" placeholder="Min Purchase (optional)" class="p-2 border rounded">
+      <input type="date" id="expiresAt" class="p-2 border rounded" required>
+      <button type="submit"
+        class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full">Create Coupon</button>
+    </form>
+
+    <div class="mt-6">
+      <h4 class="font-semibold mb-2">Your Coupons</h4>
+      <ul id="couponList" class="space-y-2"></ul>
+    </div>
+  </section>
+
+  <!-- Firebase + Charts JS Script -->
+  <script>
+    // Sample chart data – Replace with Firebase data
+    const salesChart = new Chart(document.getElementById("salesChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [{
+          label: "₹ Sales",
+          data: [1200, 1900, 3000, 2500, 2800, 3200],
+          borderColor: "#6f4e37",
+          fill: false
+        }]
+      }
+    });
+
+    const productChart = new Chart(document.getElementById("productChart"), {
+      type: "bar",
+      data: {
+        labels: ["Coffee Beans", "Snack Box", "Moka Pot", "Gift Box"],
+        datasets: [{
+          label: "Units Sold",
+          data: [50, 40, 30, 25],
+          backgroundColor: "#6f4e37"
+        }]
+      }
+    });
+
+    // Dummy Metrics – Replace with Firebase aggregation logic
+    document.getElementById("totalSales").innerText = "₹11,600";
+    document.getElementById("topProduct").innerText = "Coffee Beans";
+    document.getElementById("uniqueCustomers").innerText = "28";
+  </script>
+</body>
+
+</html>
