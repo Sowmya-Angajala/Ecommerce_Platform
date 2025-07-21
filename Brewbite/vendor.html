@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Dashboard – BrewBite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media (max-width: 640px) {
+      .product-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+    
+    .product-card {
+      transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-image-container {
+      height: 200px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+    }
+    
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+      transform: scale(1.03);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      .button-group {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .button-group button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#fff8f2] text-[#3e2f1c] min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-[#6f4e37] text-white px-4 sm:px-6 py-4 shadow-md sticky top-0 z-10">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+      <h1 class="text-lg sm:text-xl font-bold">☕ BrewBite – Vendor Dashboard</h1>
+      <button onclick="logout()" class="bg-white text-[#6f4e37] px-3 sm:px-4 py-1 rounded hover:bg-[#f3e5d8] text-sm sm:text-base">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="p-4 sm:p-6 max-w-6xl mx-auto">
+    <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6 items-start sm:items-center">
+      <h2 class="text-xl sm:text-2xl font-semibold">Welcome, <span id="userEmail"></span></h2>
+      <div class="button-group">
+        <button class="bg-[#6f4e37] text-white px-4 sm:px-6 py-2 rounded hover:bg-[#4b3525] w-full sm:w-auto"
+          onclick="window.location.href='vendorOrders.html'">Orders</button>
+        <button class="bg-[#6f4e37] text-white px-4 sm:px-6 py-2 rounded hover:bg-[#4b3525] w-full sm:w-auto"
+          onclick="window.location.href='vendorInsight.html'">Analytics</button>
+      </div>
+    </div>
+
+    <!-- Add Product Form -->
+    <section class="bg-white rounded-lg p-4 sm:p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">Add New Product</h3>
+      <form id="productForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" id="productName" placeholder="Product Name" class="p-2 border rounded w-full" required>
+        <input type="number" id="price" placeholder="Price" class="p-2 border rounded w-full" required>
+
+        <select id="category" class="p-2 border rounded w-full" required>
+          <option value="">Select Category</option>
+          <option value="coffee_beans">Coffee Beans</option>
+          <option value="gourmet_snacks">Gourmet Snacks</option>
+          <option value="brew_gear">Brew Gear</option>
+          <option value="subscription_boxes">Subscription Boxes</option>
+          <option value="gift_boxes">Gift Boxes</option>
+        </select>
+
+        <input type="text" id="image" placeholder="Image URL" class="p-2 border rounded w-full">
+        <textarea id="description" placeholder="Description" class="p-2 border rounded col-span-full w-full" rows="3"></textarea>
+
+        <div id="extraFields" class="grid gap-4 md:grid-cols-2 col-span-full w-full"></div>
+
+        <!-- New button setup -->
+        <button type="button" id="addProductBtn"
+          class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full w-full">Add Product</button>
+        <button type="button" id="addArrivalBtn"
+          class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full w-full">Add New Arrivals</button>
+        <button type="button" id="addSaleBtn"
+          class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full w-full">Add Products On Sale</button>
+      </form>
+    </section>
+
+    <!-- Product List -->
+    <section class="bg-white rounded-lg p-4 sm:p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">Your Products</h3>
+      <div id="productList" class="product-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <!-- New Arrivals -->
+    <section class="bg-white rounded-lg p-4 sm:p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">New Arrivals</h3>
+      <div id="arrivalList" class="product-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <!-- Clearance Sales -->
+    <section class="bg-white rounded-lg p-4 sm:p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">Clearance Sales</h3>
+      <div id="saleList" class="product-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <!-- Coupon Management -->
+    <section class="bg-white rounded-lg p-4 sm:p-6 shadow mb-8">
+      <h3 class="text-lg font-semibold mb-4">Manage Discount Coupons</h3>
+      <form id="couponForm" class="grid md:grid-cols-2 gap-4">
+        <input type="text" id="code" placeholder="Coupon Code (e.g., BREW10)" class="p-2 border rounded w-full" required>
+        <select id="type" class="p-2 border rounded w-full">
+          <option value="percentage">Percentage</option>
+          <option value="fixed">Fixed Amount</option>
+        </select>
+        <input type="number" id="value" placeholder="Discount Value" class="p-2 border rounded w-full" required>
+        <input type="text" id="appliesTo" placeholder="Applies to (e.g., all or category/product ID)"
+          class="p-2 border rounded w-full">
+        <input type="number" id="minPurchase" placeholder="Min Purchase (optional)" class="p-2 border rounded w-full">
+        <input type="date" id="expiresAt" class="p-2 border rounded w-full" required>
+        <button type="submit" class="bg-[#6f4e37] text-white px-6 py-2 rounded hover:bg-[#4b3525] col-span-full w-full">Create
+          Coupon</button>
+      </form>
+
+      <div class="mt-6">
+        <h4 class="font-semibold mb-2">Your Coupons</h4>
+        <ul id="couponList" class="space-y-2"></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, set, get, child } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCv77dyT60E5YM0IwqLkpOpSSCTrigUWE",
+      authDomain: "authenticate-56ae0.firebaseapp.com",
+      databaseURL: "https://authenticate-56ae0-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "authenticate-56ae0",
+      storageBucket: "authenticate-56ae0.appspot.com",
+      messagingSenderId: "644131826602",
+      appId: "1:644131826602:web:76b7bee06f711c666e59d3",
+      measurementId: "G-E76HLJH4H5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    const productForm = document.getElementById("productForm");
+    const categorySelect = document.getElementById("category");
+    const extraFieldsDiv = document.getElementById("extraFields");
+    const productList = document.getElementById("productList");
+
+    const extraFieldsMap = {
+      coffee_beans: [{ id: "roastType", label: "Roast Type" }, { id: "grindOption", label: "Grind Option" }],
+      gourmet_snacks: [{ id: "flavorProfile", label: "Flavor Profile" }],
+      brew_gear: [{ id: "material", label: "Material" }, { id: "brand", label: "Brand" }],
+      subscription_boxes: [{ id: "frequency", label: "Frequency" }, { id: "preferences", label: "Preferences" }],
+      gift_boxes: [{ id: "personalizedMessage", label: "Personalized Message" }]
+    };
+
+    categorySelect.addEventListener("change", () => {
+      const selectedCategory = categorySelect.value;
+      extraFieldsDiv.innerHTML = "";
+      extraFieldsMap[selectedCategory]?.forEach(field => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = field.id;
+        input.placeholder = field.label;
+        input.className = "p-2 border rounded w-full";
+        extraFieldsDiv.appendChild(input);
+      });
+    });
+
+    let currentUserId = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.getElementById('userEmail').innerText = user.email.split('@')[0].toUpperCase();
+        currentUserId = user.uid;
+        loadVendorProducts();
+        loadCoupons();
+        loadVendorArrivals();
+        loadVendorSales()
+        loadVendorInsights();
+      }
+    });
+
+    function loadVendorProducts() {
+      onValue(ref(db, "products"), (snapshot) => {
+        productList.innerHTML = "";
+        const data = snapshot.val();
+        for (let id in data) {
+          const product = data[id];
+          if (product.vendorId === currentUserId) {
+            const card = document.createElement("div");
+            card.className = "product-card border rounded-lg p-4 shadow bg-[#fffaf5] h-full flex flex-col";
+            card.innerHTML = `
+              <div class="product-image-container rounded-t-lg">
+                ${product.image ? `<img src="${product.image}" alt="${product.name}" class="product-image">` : 
+                  `<div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>`}
+              </div>
+              <div class="mt-4 flex-grow">
+                <h4 class="font-bold text-lg mb-1">${product.name}</h4>
+                <p class="text-[#6f4e37] font-semibold mb-2">₹${product.price}</p>
+                <p class="text-sm text-gray-600 mb-2 capitalize">${product.category.replace('_', ' ')}</p>
+                <p class="text-sm mb-3 line-clamp-2">${product.description}</p>
+                ${generateExtraFields(product)}
+              </div>
+              <button onclick="deleteProduct('${id}')" class="mt-4 text-red-600 hover:underline text-sm font-medium self-start">Delete</button>
+            `;
+            productList.appendChild(card);
+          }
+        }
+      });
+    }
+   
+
+    function loadVendorSales() {
+      const saleList = document.getElementById("saleList");
+      onValue(ref(db, "sales"), (snapshot) => {
+        saleList.innerHTML = "";
+        const data = snapshot.val();
+        for (let id in data) {
+          const product = data[id];
+          if (product.vendorId === currentUserId) {
+            const card = document.createElement("div");
+            card.className = "product-card border rounded-lg p-4 shadow bg-[#fffaf5] h-full flex flex-col";
+            card.innerHTML = `
+              <div class="product-image-container rounded-t-lg">
+                ${product.image ? `<img src="${product.image}" alt="${product.name}" class="product-image">` : 
+                  `<div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>`}
+              </div>
+              <div class="mt-4 flex-grow">
+                <h4 class="font-bold text-lg mb-1">${product.name}</h4>
+                <p class="text-[#6f4e37] font-semibold mb-2">₹${product.price}</p>
+                <p class="text-sm text-gray-600 mb-2 capitalize">${product.category.replace('_', ' ')}</p>
+                <p class="text-sm mb-3 line-clamp-2">${product.description}</p>
+                ${generateExtraFields(product)}
+              </div>
+              <button onclick="deleteSale('${id}')" class="mt-4 text-red-600 hover:underline text-sm font-medium self-start">Delete</button>
+            `;
+            saleList.appendChild(card);
+          }
+        }
+      });
+    }
+
+    window.deleteSale = (id) => remove(ref(db, "sales/" + id));
+
+ 
+    function loadVendorArrivals() {
+      const arrivalList = document.getElementById("arrivalList");
+      onValue(ref(db, "arrivals"), (snapshot) => {
+        arrivalList.innerHTML = "";
+        const data = snapshot.val();
+        for (let id in data) {
+          const product = data[id];
+          if (product.vendorId === currentUserId) {
+            const card = document.createElement("div");
+            card.className = "product-card border rounded-lg p-4 shadow bg-[#fffaf5] h-full flex flex-col";
+            card.innerHTML = `
+              <div class="product-image-container rounded-t-lg">
+                ${product.image ? `<img src="${product.image}" alt="${product.name}" class="product-image">` : 
+                  `<div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>`}
+              </div>
+              <div class="mt-4 flex-grow">
+                <h4 class="font-bold text-lg mb-1">${product.name}</h4>
+                <p class="text-[#6f4e37] font-semibold mb-2">₹${product.price}</p>
+                <p class="text-sm text-gray-600 mb-2 capitalize">${product.category.replace('_', ' ')}</p>
+                <p class="text-sm mb-3 line-clamp-2">${product.description}</p>
+                ${generateExtraFields(product)}
+              </div>
+              <button onclick="deleteArrival('${id}')" class="mt-4 text-red-600 hover:underline text-sm font-medium self-start">Delete</button>
+            `;
+            arrivalList.appendChild(card);
+          }
+        }
+      });
+    }
+
+    window.deleteArrival = (id) => remove(ref(db, "arrivals/" + id));
+
+
+    function generateExtraFields(product) {
+      return Object.keys(product)
+        .filter(k => !["name", "price", "category", "image", "description", "vendorId"].includes(k))
+        .map(k => `<p class="text-sm mb-1"><span class="font-medium">${k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}:</span> ${product[k]}</p>`)
+        .join("");
+    }
+
+    window.deleteProduct = (id) => remove(ref(db, "products/" + id));
+
+    // Handle submit for 3 types
+    let saveToPath = "products";
+
+    document.getElementById("addProductBtn").addEventListener("click", () => {
+      saveToPath = "products";
+      productForm.requestSubmit();
+    });
+    document.getElementById("addArrivalBtn").addEventListener("click", () => {
+      saveToPath = "arrivals";
+      productForm.requestSubmit();
+    });
+    document.getElementById("addSaleBtn").addEventListener("click", () => {
+      saveToPath = "sales";
+      productForm.requestSubmit();
+    });
+
+    productForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("productName").value;
+      const price = document.getElementById("price").value;
+      const category = categorySelect.value;
+      const image = document.getElementById("image").value;
+      const description = document.getElementById("description").value;
+
+      const extraFieldData = {};
+      extraFieldsMap[category]?.forEach(field => {
+        extraFieldData[field.id] = document.getElementById(field.id)?.value || "";
+      });
+
+      const productData = {
+        name,
+        price,
+        category,
+        image,
+        description,
+        vendorId: currentUserId,
+        ...extraFieldData
+      };
+
+      push(ref(db, saveToPath), productData);
+      productForm.reset();
+      extraFieldsDiv.innerHTML = "";
+    });
+
+    // Coupons
+    const couponForm = document.getElementById("couponForm");
+    const couponList = document.getElementById("couponList");
+
+    couponForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = document.getElementById("code").value.trim();
+      const type = document.getElementById("type").value;
+      const value = parseFloat(document.getElementById("value").value);
+      const appliesTo = document.getElementById("appliesTo").value.trim() || "all";
+      const minPurchase = parseFloat(document.getElementById("minPurchase").value) || 0;
+      const expiresAt = new Date(document.getElementById("expiresAt").value).toISOString();
+
+      await set(ref(db, `coupons/${currentUserId}/${code}`), {
+        type, value, appliesTo, minPurchase, expiresAt
+      });
+
+      alert("Coupon created!");
+      couponForm.reset();
+      loadCoupons();
+    });
+
+    function loadCoupons() {
+      onValue(ref(db, `coupons/${currentUserId}`), (snapshot) => {
+        couponList.innerHTML = "";
+        if (snapshot.exists()) {
+          Object.entries(snapshot.val()).forEach(([code, c]) => {
+            couponList.innerHTML += `
+              <li class="bg-[#fffaf5] border p-3 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div class="flex-grow">
+                  <strong class="text-[#6f4e37]">${code}</strong> – ${c.type === 'percentage' ? `${c.value}%` : `₹${c.value}`}<br>
+                  <span class="text-sm">Applies to: ${c.appliesTo}, Min: ₹${c.minPurchase || 0}</span><br>
+                  <span class="text-xs text-gray-500">Expires: ${new Date(c.expiresAt).toDateString()}</span>
+                </div>
+                <button onclick="deleteCoupon('${code}')" class="text-red-600 hover:underline text-sm font-medium">Delete</button>
+              </li>`;
+          });
+        } else {
+          couponList.innerHTML = "<li class='text-gray-500'>No coupons created yet.</li>";
+        }
+      });
+    }
+
+    window.deleteCoupon = async (code) => {
+      if (confirm(`Delete coupon ${code}?`)) {
+        await remove(ref(db, `coupons/${currentUserId}/${code}`));
+        loadCoupons();
+      }
+    };
+
+    // Insights
+    function loadVendorInsights() {
+      get(ref(db, 'orders')).then(snapshot => {
+        const data = snapshot.val();
+        const vendorOrders = [];
+        Object.values(data || {}).forEach(customerOrders => {
+          Object.values(customerOrders).forEach(order => {
+            const vendorItems = order.items.filter(item => item.vendorId === currentUserId);
+            if (vendorItems.length) {
+              vendorOrders.push({
+                ...order,
+                items: vendorItems,
+                totalAmount: vendorItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0)
+              });
+            }
+          });
+        });
+
+        const salesByMonth = {}, productCounts = {}, regions = {};
+        vendorOrders.forEach(order => {
+          const d = new Date(order.timestamp);
+          const month = `${d.getFullYear()}-${d.getMonth() + 1}`;
+          salesByMonth[month] = (salesByMonth[month] || 0) + order.totalAmount;
+          order.items.forEach(item => {
+            productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+          });
+          const region = order.email.split('@')[1] || 'unknown';
+          regions[region] = (regions[region] || 0) + 1;
+        });
+
+        // RenderCharts(...) — left out for brevity
+      });
+    }
+
+    window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+  </script>
+</body>
+
+</html>
